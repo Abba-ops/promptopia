@@ -18,7 +18,7 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
-    async session({ session }) {
+    async session({ session, token }) {
       await connectDB();
       const sessionUser = await User.findOne({ email: session.user.email });
 
@@ -46,6 +46,12 @@ const handler = NextAuth({
         console.log(error);
         return false;
       }
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
     },
   },
 });
