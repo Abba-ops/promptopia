@@ -2,7 +2,7 @@
 
 import Form from "@/components/Form";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, Suspense } from "react";
 
 interface Post {
   prompt: string;
@@ -11,7 +11,7 @@ interface Post {
 
 const apiDomain = process.env.NEXT_PUBLIC_API_DOMAIN || null;
 
-export default function UpdatePrompt() {
+function UpdatePromptContent() {
   const searchParams = useSearchParams();
   const promptId = searchParams.get("id");
 
@@ -33,6 +33,9 @@ export default function UpdatePrompt() {
           prompt: post.prompt,
           tag: post.tag,
         }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       if (response.ok) {
@@ -67,5 +70,13 @@ export default function UpdatePrompt() {
       submitting={submitting}
       handleSubmit={updatePrompt}
     />
+  );
+}
+
+export default function UpdatePrompt() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <UpdatePromptContent />
+    </Suspense>
   );
 }
